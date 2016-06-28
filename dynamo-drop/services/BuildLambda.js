@@ -21,12 +21,14 @@ const template = Hogan.compile(FileSystem.readFileSync('template.hjs', 'utf8'));
 module.exports = function(container, functions) {
   functions = functions.map(fn => {
     fn.argumentString = fn.arguments.join(', ');
+    console.log(fn['function']);
+    fn['function'] = fn['function'].replace(/\n/gi, '\\n').replace(/"/gi, '\\"');
+    console.log(fn['function']);
     return fn;
   })
   let body = template.render({
     container,
     functions,
-    str: JSON.stringify(container.lifecycle, null, 2),
     lifecycle: container.lifecycle,
   });
   let Key = `archive/${container.id}.zip`;

@@ -2,6 +2,7 @@
 console.info('Loading ${platform.name} executor');
 
 const Bluebird = require('bluebird');
+const vm = require('vm');
 
 // Initialization
 let initialized = Bluebird.resolve();
@@ -13,7 +14,7 @@ initialized = Bluebird.method({{{init}}})();
 
 var methods = {
 {{#functions}}
-  '{{signature}}': {{{function}}},
+  '{{signature}}': wrap("{{{function}}}"),
 {{/functions}}
 };
 
@@ -29,17 +30,28 @@ module.exports.handler = (event, context, cb) => {
         event
           .map(method => {
             let fn = methods[method.id];
-            if (typeof fn !== 'function') return Bluebird.reject(`Identifier "${method.name}" not found.`).reflect();
+            if (typeof fn === 'undefined') return Bluebird.reject(`Identifier "${method.name}" not found.`).reflect();
+
             let args = method.arguments || [];
             let timeout = context.getRemainingTimeInMillis() - 100;
-            return Bluebird
-              .method(fn.bind(ctx)).apply(ctx, method.arguments)
-              .timeout(timeout)
-              .catch(Bluebird.TimeoutError, function(e) {
-                console.log(`Function timeout out in ${timeout}ms`);
-                throw new Error(`Function timeout out in ${timeout}ms`);
-              })
-              .reflect();
+
+            return Bluebird.fromCallback(cb => {
+              fn.runInNewContext({
+                ctx,
+                require,
+                console,
+                parameters: method.arguments,
+                cb,
+              }, {
+                timeout,
+              });
+            })
+            .timeout(timeout)
+            .catch(Bluebird.TimeoutError, function(e) {
+              console.log(`Function timeout out in ${timeout}ms`);
+              throw new Error(`Function timeout out in ${timeout}ms`);
+            })
+            .reflect();
           })
       )
       .then(results => results.map(result => {
@@ -50,4 +62,16 @@ module.exports.handler = (event, context, cb) => {
       }))
   )
   .asCallback(cb);
+}
+
+function wrap(code) {
+  return new vm.Script(`
+    'use strict';
+
+    const Bluebird = require('bluebird');
+    Bluebird
+      .method(${code})
+      .apply(ctx, parameters)
+      .asCallback(cb);
+  `)
 }
