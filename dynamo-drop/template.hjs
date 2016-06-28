@@ -1,0 +1,53 @@
+'use strict';
+console.info('Loading ${platform.name} executor');
+
+const Bluebird = require('bluebird');
+
+// Initialization
+let initialized = Bluebird.resolve();
+{{#lifecycle}}
+  {{#init}}
+initialized = Bluebird.method({{{init}}})();
+  {{/init}}
+{{/lifecycle}}
+
+var methods = {
+{{#functions}}
+  '{{signature}}': {{{function}}},
+{{/functions}}
+};
+
+module.exports.handler = (event, context, cb) => {
+  {{#lifecycle}}
+    {{#init}}
+  context.callbackWaitsForEmptyEventLoop = false;
+    {{/init}}
+  {{/lifecycle}}
+  initialized
+    .then((ctx) =>
+      Bluebird.all(
+        event
+          .map(method => {
+            let fn = methods[method.id];
+            if (typeof fn !== 'function') return Bluebird.reject(`Identifier "${method.name}" not found.`).reflect();
+            let args = method.arguments || [];
+            let timeout = context.getRemainingTimeInMillis() - 100;
+            return Bluebird
+              .method(fn.bind(ctx)).apply(ctx, method.arguments)
+              .timeout(timeout)
+              .catch(Bluebird.TimeoutError, function(e) {
+                console.log(`Function timeout out in ${timeout}ms`);
+                throw new Error(`Function timeout out in ${timeout}ms`);
+              })
+              .reflect();
+          })
+      )
+      .then(results => results.map(result => {
+        if (result.isRejected()) {
+          return result.reason();
+        }
+        return result.value();
+      }))
+  )
+  .asCallback(cb);
+}

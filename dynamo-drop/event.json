@@ -1,0 +1,185 @@
+{
+    "Records": [
+        {
+            "eventID": "8be80de341d7c853bd69d204fd9df3f9",
+            "eventName": "MODIFY",
+            "eventVersion": "1.1",
+            "eventSource": "aws:dynamodb",
+            "awsRegion": "us-east-1",
+            "dynamodb": {
+                "ApproximateCreationDateTime": 1467091740,
+                "Keys": {
+                    "id": {
+                        "S": "uofu.fin"
+                    }
+                },
+                "NewImage": {
+                    "lifecycle": {
+                        "M": {
+                            "init": {
+                                "S": "() => { console.log(\"initialized\"); }"
+                            },
+                            "pre": {
+                                "S": "() => {}"
+                            },
+                            "post": {
+                                "S": "() => { console.log('pre-call'); }"
+                            }
+                        }
+                    },
+                    "memory": {
+                        "N": "1024"
+                    },
+                    "id": {
+                        "S": "uofu.fin"
+                    },
+                    "timeout": {
+                        "N": "10"
+                    }
+                },
+                "SequenceNumber": "147600000000004885997476",
+                "SizeBytes": 143,
+                "StreamViewType": "NEW_IMAGE"
+            },
+            "eventSourceARN": "arn:aws:dynamodb:us-east-1:611601652995:table/Slambda-Container/stream/2016-06-28T05:28:26.535"
+        },
+        {
+            "eventID": "75fe383f47f5bfe6f07eef093a4407be",
+            "eventName": "MODIFY",
+            "eventVersion": "1.1",
+            "eventSource": "aws:dynamodb",
+            "awsRegion": "us-east-1",
+            "dynamodb": {
+                "ApproximateCreationDateTime": 1467093960,
+                "Keys": {
+                    "id": {
+                        "S": "uofu.fin"
+                    }
+                },
+                "NewImage": {
+                    "lifecycle": {
+                        "M": {
+                            "init": {
+                                "S": "() => { console.log(\"initialized\"); }"
+                            },
+                            "pre": {
+                                "S": "() => {}"
+                            },
+                            "post": {
+                                "S": "() => { console.log('pre-call'); }"
+                            }
+                        }
+                    },
+                    "memory": {
+                        "N": "1024"
+                    },
+                    "language": {
+                        "S": "node4.3"
+                    },
+                    "id": {
+                        "S": "uofu.fin"
+                    },
+                    "timeout": {
+                        "N": "10"
+                    }
+                },
+                "SequenceNumber": "147700000000004886447622",
+                "SizeBytes": 158,
+                "StreamViewType": "NEW_IMAGE"
+            },
+            "eventSourceARN": "arn:aws:dynamodb:us-east-1:611601652995:table/Slambda-Container/stream/2016-06-28T05:28:26.535"
+        },
+        {
+            "eventID": "fd3dd96bac78485e1c5fd3b49ecb9d3a",
+            "eventName": "MODIFY",
+            "eventVersion": "1.1",
+            "eventSource": "aws:dynamodb",
+            "awsRegion": "us-east-1",
+            "dynamodb": {
+                "ApproximateCreationDateTime": 1467094740,
+                "Keys": {
+                    "id": {
+                        "S": "uofu.fin"
+                    }
+                },
+                "NewImage": {
+                    "lifecycle": {
+                        "M": {
+                            "init": {
+                                "S": "() => { console.log(\"initialized\"); }"
+                            },
+                            "pre": {
+                                "S": "() => {}"
+                            },
+                            "post": {
+                                "S": "() => { console.log('pre-call'); }"
+                            }
+                        }
+                    },
+                    "memory": {
+                        "N": "1024"
+                    },
+                    "language": {
+                        "S": "nodejs4.3"
+                    },
+                    "id": {
+                        "S": "uofu.fin"
+                    },
+                    "timeout": {
+                        "N": "10"
+                    }
+                },
+                "SequenceNumber": "147800000000004886636373",
+                "SizeBytes": 160,
+                "StreamViewType": "NEW_IMAGE"
+            },
+            "eventSourceARN": "arn:aws:dynamodb:us-east-1:611601652995:table/Slambda-Container/stream/2016-06-28T05:28:26.535"
+        },
+        {
+            "eventID": "f1e362a4a63c9c459a96d4acf8d6645e",
+            "eventName": "MODIFY",
+            "eventVersion": "1.1",
+            "eventSource": "aws:dynamodb",
+            "awsRegion": "us-east-1",
+            "dynamodb": {
+                "ApproximateCreationDateTime": 1467094860,
+                "Keys": {
+                    "id": {
+                        "S": "uofu.fin"
+                    }
+                },
+                "NewImage": {
+                    "lifecycle": {
+                        "M": {
+                            "init": {
+                                "S": "() => { console.log(\"initialized\"); }"
+                            },
+                            "pre": {
+                                "S": "() => {}"
+                            },
+                            "post": {
+                                "S": "() => { console.log('pre-call'); }"
+                            }
+                        }
+                    },
+                    "memory": {
+                        "N": "1024"
+                    },
+                    "language": {
+                        "S": "nodejs4.2"
+                    },
+                    "id": {
+                        "S": "uofu.fin"
+                    },
+                    "timeout": {
+                        "N": "10"
+                    }
+                },
+                "SequenceNumber": "147900000000004886666763",
+                "SizeBytes": 160,
+                "StreamViewType": "NEW_IMAGE"
+            },
+            "eventSourceARN": "arn:aws:dynamodb:us-east-1:611601652995:table/Slambda-Container/stream/2016-06-28T05:28:26.535"
+        }
+    ]
+}

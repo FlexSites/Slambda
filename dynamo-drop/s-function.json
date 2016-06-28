@@ -1,0 +1,40 @@
+{
+  "name": "dynamo-drop",
+  "runtime": "nodejs4.3",
+  "description": "Serverless Lambda function for project: slambda",
+  "customName": false,
+  "customRole": false,
+  "handler": "handler.handler",
+  "timeout": 6,
+  "memorySize": 1024,
+  "authorizer": {},
+  "custom": {
+    "excludePatterns": []
+  },
+  "endpoints": [],
+  "events": [
+    {
+      "name": "functions",
+      "type": "dynamodbstream",
+      "config": {
+        "streamArn": "arn:aws:dynamodb:us-east-1:611601652995:table/Slambda-Function/stream/2016-06-28T05:27:51.132"
+      }
+    },
+    {
+      "name": "containers",
+      "type": "dynamodbstream",
+      "config": {
+        "streamArn": "arn:aws:dynamodb:us-east-1:611601652995:table/Slambda-Container/stream/2016-06-28T05:28:26.535"
+      }
+    }
+  ],
+  "environment": {
+    "SERVERLESS_PROJECT": "${project}",
+    "SERVERLESS_STAGE": "${stage}",
+    "SERVERLESS_REGION": "${region}"
+  },
+  "vpc": {
+    "securityGroupIds": [],
+    "subnetIds": []
+  }
+}

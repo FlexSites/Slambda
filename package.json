@@ -1,0 +1,20 @@
+{
+  "name": "slambda",
+  "version": "0.0.1",
+  "description": "A Serverless Project and its Serverless Plugin dependencies.",
+  "author": "me",
+  "license": "MIT",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/"
+  },
+  "dependencies": {
+    "archiver": "^1.0.0",
+    "aws-sdk": "^2.4.2",
+    "bluebird": "^3.4.1",
+    "hogan.js": "^3.0.2",
+    "lodash.get": "^4.3.0",
+    "uuid": "^2.0.2"
+  }
+}
