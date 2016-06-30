@@ -6,7 +6,9 @@ const build = require('../../lib/build');
 const Bluebird = require('bluebird');
 const FileSystem = require('fs');
 const Archiver = require('archiver');
+const get = require('lodash.get');
 const path = require('path');
+const bundle = require('../../lib/bundle');
 
 AWS.config.setPromisesDependency(Bluebird);
 
@@ -27,16 +29,18 @@ module.exports = class AWSLambda {
   }
 
   deploy(container, functions) {
-    let body = build(container, functions);
-    let Key = `${this.options.aws.prefix}/${container.id}.zip`;
-    console.log(Key, body);
+    let Body = bundle(build(container, functions), path.join(__dirname, 'handler.js'), container.dependencies);
+    let Key = `${container.id}.zip`;
+    let prefix = get(this, 'options', 'aws', 's3', 'prefix');
+    if (prefix) Key = `${prefix}/${Key}`;
+    console.log(Key, Body);
     // console.log(body);
     // return Bluebird.resolve(body)
     return Bluebird.fromCallback(cb => {
       let req = this.s3
         .upload({
           Key,
-          Body: createArchive(body),
+          Body,
         }, {}, cb);
 
       req.on('httpUploadProgress', function(evt) { console.info(evt); })
@@ -92,20 +96,4 @@ function updateLambda(service, FunctionName, s3Options) {
     return service.updateFunctionCode(params).promise();
   })
 
-}
-
-function createArchive(fn) {
-  let archive = new Archiver('zip');
-
-  archive.on('error', console.log.bind(console));
-  archive.on('close', console.log.bind(console));
-
-  archive.append(fn, {
-    name: 'handler.js',
-  });
-  archive.glob('**', {
-    cwd: path.resolve(__dirname, '../_shared/')
-  });
-  archive.finalize();
-  return archive;
 }
