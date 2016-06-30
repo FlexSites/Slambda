@@ -1,6 +1,5 @@
 'use strict';
 
-const linter = require('eslint').linter;
 const Bluebird = require('bluebird');
 
 const Memory = require('./Memory');
@@ -36,27 +35,12 @@ module.exports = class Storage {
 
   listMethods(containerId) {
     debug(`#listMethods() ${JSON.stringify(arguments)}`);
-    console.log('listMethods', containerId);
     return this.service.findById(this.methodTable, 'container', containerId)
-  }
-
-  validateMethod(method) {
-    debug(`#validateMethod() ${JSON.stringify(arguments)}`);
-    let results = linter
-      .verify(method.code, {}, { filename: 'handler.js' });
-    let i = 0;
-    while(results[i]) {
-      console.log(results[i]);
-      if (results[i].fatal) return Promise.reject(new Error(results[i].message));
-      i++;
-    }
-    return Promise.resolve();
   }
 
   putMethod(method) {
     debug(`#putMethod() ${JSON.stringify(arguments)}`);
-    return this.validateMethod(method)
-      .then(() => this.service.put(this.methodTable, method));
+    return this.service.put(this.methodTable, method);
   }
 
   deleteMethod(methodId) {
@@ -66,7 +50,6 @@ module.exports = class Storage {
 
   getContainer(containerId) {
     debug(`#getContainer() ${JSON.stringify(arguments)}`);
-    console.log('getContainer', containerId);
     return this.service.get(this.containerTable, containerId)
       .catch(() => ({}))
       .then(merge(this.containerDefaults))
