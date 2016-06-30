@@ -1,0 +1,23 @@
+{
+  "name": "slambda",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "debug": "node-debug test/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.4.2",
+    "change-case": "^3.0.0",
+    "debug": "^2.2.0",
+    "eslint": "^2.13.1",
+    "get-parameter-names": "^0.3.0",
+    "i": "^0.3.5"
+  },
+  "devDependencies": {
+    "node-inspector": "^0.12.8"
+  }
+}
