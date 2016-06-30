@@ -11,7 +11,7 @@ module.exports = class Container {
     this.storage = storage;
     this.executor = executor;
 
-    this.options = Object.assign({ autoDeploy: true }, options);
+    this.options = options;
 
     this.run = executor.run.bind(executor);
   }

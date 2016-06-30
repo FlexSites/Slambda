@@ -11,6 +11,7 @@ const debug = require('debug')('slambda');
 AWS.config.setPromisesDependency(Bluebird);
 
 const defaultOptions = {
+  autoDeploy: true,
   container: {
     language: 'nodejs4.3',
     lifecycle: {
@@ -58,7 +59,7 @@ module.exports = class Slambda {
       this.storage.putContainer(Object.assign({ id }, container));
     }
 
-    return new Container(id, this.storage, this.execution(id));
+    return new Container(id, this.storage, this.execution(id), { autoDeploy: this.options.autoDeploy });
   }
 }
 
