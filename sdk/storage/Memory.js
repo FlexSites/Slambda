@@ -19,24 +19,20 @@ module.exports = class Memory {
   get(table, id) {
     debug(`#get() ${JSON.stringify(arguments)}`);
     let item = this.store[table][id];
-    console.log('get', table, id);
     if (item) return Bluebird.resolve(item);
     return reject(`Item "${id}" not found in table "${table}"`, NotFound);
   }
 
   findById(table, index, id) {
     debug(`#findById() ${JSON.stringify(arguments)}`);
-    console.log('findById', table, index, id, this.store[table]);
     return Bluebird.resolve(
       Object.keys(this.store[table])
         .reduce((prev, curr) => {
           let val = this.store[table][curr];
-          console.log('keys', prev, curr, !index || val[index] === id);
           if (!index || val[index] === id) prev.push(val);
           return prev;
         }, [])
-    ).tap(list => console.log('*********************findById', list))
-    .catch((ex) => console.error('horrible exception', ex));
+    );
   }
 
   list(table) {
