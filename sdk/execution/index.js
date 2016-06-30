@@ -12,4 +12,4 @@ const strategies = {
   google: Google,
 };
 
-module.exports = (strategy) => strategies[strategy] || Local;
+module.exports = (strategy) => strategies[strategy.toLowerCase()] || Local;

@@ -1,8 +1,8 @@
 'use strict';
 
 const Bluebird = require('bluebird');
-const Batch = require('../Batch');
-const Method = require('../Method');
+const Batch = require('../../Batch');
+const Method = require('../../Method');
 const debug = require('debug')('slambda:execution:Local');
 
 module.exports = class Local {
@@ -18,7 +18,6 @@ module.exports = class Local {
 
   deploy(container, methods) {
     debug(`#deploy() Container: ${container.id} Methods: ${methods.length}`);
-    console.log('container', container)
     this.ctx = new Method(container.lifecycle.init).run()
     this.container = container;
     this.methods = methods.reduce((prev, curr) => {
@@ -29,11 +28,12 @@ module.exports = class Local {
 
   execute(calls) {
     debug(`#execute() Calls: ${calls.length}`);
+    console.log(this.methods);
     return Bluebird.all(
       calls
         .map(method => {
           let fn = this.methods[method.id];
-          console.log(method.id, this.methods, fn);
+          console.log(method.id, fn);
           if (typeof fn === 'undefined') return Bluebird.resolve(method.arguments).reflect();
 
           return fn.run(method.arguments, this.ctx)

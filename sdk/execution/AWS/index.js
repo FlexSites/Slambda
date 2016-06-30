@@ -1,8 +1,8 @@
 'use strict';
 
 const AWS = require('aws-sdk');
-const Batch = require('../Batch');
-const build = require('../lib/build');
+const Batch = require('../../Batch');
+const build = require('../../lib/build');
 const Bluebird = require('bluebird');
 const FileSystem = require('fs');
 const Archiver = require('archiver');
@@ -14,6 +14,8 @@ module.exports = class AWSLambda {
   constructor(containerId, options) {
     let region = options.aws.region;
     let Bucket = options.aws.s3.bucket;
+    this.bucket = Bucket;
+    this.options = options;
     this.lambda = new AWS.Lambda({ region });
     this.s3 = new AWS.S3({ region, params: { Bucket } });
 
@@ -26,14 +28,15 @@ module.exports = class AWSLambda {
 
   deploy(container, functions) {
     let body = build(container, functions);
-    let Key = `archive/${container.id}.zip`;
-
+    let Key = `${this.options.aws.prefix}/${container.id}.zip`;
+    console.log(Key, body);
+    // console.log(body);
+    // return Bluebird.resolve(body)
     return Bluebird.fromCallback(cb => {
       let req = this.s3
         .upload({
           Key,
           Body: createArchive(body),
-          Bucket,
         }, {}, cb);
 
       req.on('httpUploadProgress', function(evt) { console.info(evt); })
@@ -41,18 +44,19 @@ module.exports = class AWSLambda {
     .then((obj) => {
       return updateLambda(this.lambda, container.id.replace(/\W+/, '-'), {
         Key,
-        Bucket,
+        Bucket: this.bucket,
       });
     })
     .catch(console.error.bind(console));
   }
 
   execute(calls) {
-    return this.service.invoke({
-      FunctionName: this.containerId,
-      InnvocationType: 'RequestResponse',
-      Payload: calls,
-    }).promise();
+    return Bluebird.resolve(calls);
+    // return this.service.invoke({
+    //   FunctionName: this.containerId,
+    //   InnvocationType: 'RequestResponse',
+    //   Payload: calls,
+    // }).promise();
   }
 }
 
@@ -76,7 +80,7 @@ function updateLambda(service, FunctionName, s3Options) {
         Timeout: 10,
       };
       if (s3Options.Version) params.Code.S3ObjectVersion = s3Options.Version;
-      return lambda.createFunction(params).promise();
+      return service.createFunction(params).promise();
     }
 
     let params = {
@@ -85,7 +89,7 @@ function updateLambda(service, FunctionName, s3Options) {
       S3Bucket: s3Options.Bucket,
     };
     if (s3Options.Version) params.S3ObjectVersion = s3Options.Version;
-    return lambda.updateFunctionCode(params).promise();
+    return service.updateFunctionCode(params).promise();
   })
 
 }
