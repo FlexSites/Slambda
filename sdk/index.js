@@ -2,11 +2,11 @@
 
 const AWS = require('aws-sdk');
 const Bluebird = require('bluebird');
-const linter = require('eslint').linter;
+const debug = require('debug')('slambda');
+
 const Storage = require('./storage');
 const Container = require('./Container');
 const getExecution = require('./execution');
-const debug = require('debug')('slambda');
 
 AWS.config.setPromisesDependency(Bluebird);
 

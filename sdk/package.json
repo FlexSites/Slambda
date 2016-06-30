@@ -11,9 +11,10 @@
   "license": "ISC",
   "dependencies": {
     "aws-sdk": "^2.4.2",
-    "debug": "^2.2.0"
-  },
-  "devDependencies": {
-    "node-inspector": "^0.12.8"
+    "bluebird": "^3.4.1",
+    "debug": "^2.2.0",
+    "lodash.get": "^4.3.0",
+    "spawn-npm-install": "^1.2.0",
+    "uuid": "^2.0.2"
   }
 }
