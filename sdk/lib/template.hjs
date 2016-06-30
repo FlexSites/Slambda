@@ -1,71 +1,45 @@
 'use strict';
-console.info('Loading ${platform.name} executor');
 
 const Bluebird = require('bluebird');
-const vm = require('vm');
+const Slambda = require('slambda');
+
+const TIMEOUT = {{container.timeout}} * 1000;
+
+let slambda = new Slambda()
+  .container('{{container.id}}');
 
 // Initialization
-let initialized = Bluebird.resolve();
 {{#lifecycle}}
   {{#init}}
-initialized = Bluebird.method({{{init}}})();
+module.exports.init = Bluebird.method({{{init}}})();
+  {{/init}}
+  {{^init}}
+module.exports = Bluebird.resolve();
   {{/init}}
 {{/lifecycle}}
 
-var methods = {
-{{#functions}}
-  '{{signature}}': wrap("{{{function}}}"),
-{{/functions}}
-};
+{{#methods}}
+slambda.method('{{id}}', '{{{code}}}');
+{{/methods}}
 
-module.exports.handler = (event, timeout) => {
-  initialized
-    .then((ctx) =>
-      Bluebird.all(
-        event
-          .map(method => {
-            let fn = methods[method.id];
-            if (typeof fn === 'undefined') return Bluebird.reject(`Identifier "${method.name}" not found.`).reflect();
-
-            let args = method.arguments || [];
-
-            return Bluebird.fromCallback(cb => {
-              fn.runInNewContext({
-                ctx,
-                require,
-                console,
-                parameters: method.arguments,
-                cb,
-              }, {
-                timeout,
-              });
-            })
-            .timeout(timeout)
-            .catch(Bluebird.TimeoutError, function(e) {
-              console.log(`Function timeout out in ${timeout}ms`);
-              throw new Error(`Function timeout out in ${timeout}ms`);
-            })
-            .reflect();
-          })
-      )
-      .then(results => results.map(result => {
-        if (result.isRejected()) {
-          return result.reason();
-        }
-        return result.value();
-      }))
-  )
-  .asCallback(cb);
+module.exports.main = (calls) => {
+  return Bluebird.all(
+    calls.map(method => run(method.id, method.arguments))
+  );
 }
 
-function wrap(code) {
-  return new vm.Script(`
-    'use strict';
-
-    const Bluebird = require('bluebird');
-    Bluebird
-      .method(${code})
-      .apply(ctx, parameters)
-      .asCallback(cb);
-  `)
+function run(id, args) {
+  return slambda.run(id, args)
+    .timeout(TIMEOUT)
+    .catch(Bluebird.TimeoutError, function(e) {
+      console.log(`Function timeout out in ${TIMEOUT}ms`);
+      throw new Error(`Function timeout out in ${TIMEOUT}ms`);
+    })
+    .reflect()
+    .then(result => {
+      if (result.isRejected()) {
+        return result.reason();
+      }
+      return result.value();
+    })
 }
